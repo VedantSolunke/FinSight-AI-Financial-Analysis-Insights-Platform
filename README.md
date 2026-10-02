@@ -60,66 +60,15 @@ Traditional manual analysis creates several problems:
 
 ---
 
-## Solution
+# Architecture
 
-FinSight AI uses a two-path intelligence architecture:
+## Logical Architecture
 
-### Structured Financial Intelligence
+## ![Logical FinSight-AI architecture diagram](diagrams/Logical_FinSight-AI%20Architecture%20Diagram.png)
 
-Annual reports are processed once, relevant financial information is extracted with RAG + GPT-5, and the resulting KPI data is stored in PostgreSQL.
+## Physical Architecture
 
-```text
-Annual Report
-     │
-     ▼
-PDF → Markdown
-     │
-     ▼
-Semantic Chunking
-     │
-     ▼
-Embeddings
-     │
-     ▼
-Azure AI Search
-     │
-     ▼
-KPI Retrieval
-     │
-     ▼
-GPT-5
-     │
-     ▼
-Structured KPI Data
-     │
-     ▼
-PostgreSQL
-     │
-     ▼
-Dashboard
-```
-
-### Conversational Financial Research
-
-Users can ask questions about indexed financial reports. Relevant content is retrieved before GPT-5 generates the response.
-
-```text
-User Question
-     │
-     ▼
-Azure AI Search
-     │
-     ▼
-Relevant Report Context
-     │
-     ▼
-GPT-5
-     │
-     ▼
-Natural-Language Answer
-```
-
-This separation allows frequently displayed dashboard information to be persisted while keeping conversational analysis dynamic.
+## ![Physical FinSight-AI architecture diagram ](diagrams/physical_FinSight-AI%20Azure%20Cloud%20Architecture.png)
 
 ---
 
@@ -201,29 +150,7 @@ A major goal of this README is to distinguish what was actually demonstrated fro
 
 --- -->
 
-# Architecture
-
-## Architecture Philosophy
-
-The project separates two architectural views:
-
-- **Logical architecture** — how information moves through the application.
-
-- **Physical architecture** — which cloud/platform services host each responsibility.
-
-The architecture was designed before implementation and then implemented incrementally.
-
 ---
-
-## Logical Architecture
-
-![Logical FinSight-AI architecture diagram](diagrams/Logical_FinSight-AI%20Architecture%20Diagram.png)
-
----
-
-## Physical Architecture
-
-## ![Physical FinSight-AI architecture diagram ](diagrams/physical_FinSight-AI%20Azure%20Cloud%20Architecture.png)
 
 # AI / RAG Pipeline
 
@@ -1104,40 +1031,6 @@ The architecture was intentionally kept relatively compact to reduce unnecessary
 
 ---
 
-# Screenshots & Visuals
-
-The repository can be made even more presentation-ready by storing UI screenshots under a directory such as:
-
-```text
-docs/
-└── images/
-    ├── dashboard.png
-    ├── chatbot.png
-    ├── report-upload.png
-    ├── company-analysis.png
-    └── aks-deployment.png
-```
-
-Recommended README placement:
-
-### Dashboard
-
-```markdown
-![FinSight AI Dashboard](docs/images/dashboard.png)
-```
-
-### AI Research / Chatbot
-
-```markdown
-![FinSight AI Chatbot](docs/images/chatbot.png)
-```
-
-### Architecture
-
-The Mermaid diagrams in this README are intentionally used as repository-native visuals so the architecture remains readable without requiring external diagram files.
-
----
-
 # What This Project Demonstrates
 
 From a technical-review perspective, the project demonstrates experience across several layers of modern AI application engineering.
@@ -1150,7 +1043,6 @@ From a technical-review perspective, the project demonstrates experience across 
 - GPT-5 integration.
 - Embeddings.
 - Search/retrieval design.
-- AI cost considerations.
 
 ### Backend Engineering
 
@@ -1256,7 +1148,7 @@ AI-generated financial insights should be validated against the underlying sourc
 ## Built With
 
 <p align="center">
-  <img src="https://skillicons.dev/icons?i=python,fastapi,docker,kubernetes,github,githubactions,postgres,azure" alt="Technology icons">
+  <img src="https://skillicons.dev/icons?i=python,fastapi,docker,kubernetes,github,postgres,azure" alt="Technology icons">
 </p>
 
 <p align="center">
