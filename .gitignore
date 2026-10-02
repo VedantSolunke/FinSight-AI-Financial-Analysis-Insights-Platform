@@ -1,0 +1,83 @@
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.hypothesis/
+.tox/
+.nox/
+*.egg-info/
+dist/
+build/
+pip-wheel-metadata/
+poetry.lock
+Pipfile.lock
+.venv/
+venv/
+env/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm/
+.yarn/
+.parcel-cache/
+.next/
+.nuxt/
+out/
+
+# Application logs and local runtime files
+*.log
+logs/
+*.pid
+*.seed
+
+# Databases and local storage
+*.sqlite
+*.sqlite3
+*.db
+
+# Build and coverage outputs
+.cache/
+coverage/
+tmp/
+temp/
+
+# IDEs and editors
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+*.swp
+*.swo
+
+# Operating systems
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
