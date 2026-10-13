@@ -4,7 +4,7 @@ from routes.dashboard import router as dashboard_router
 from routes.health import router as health_router
 
 app = FastAPI(
-    title="Investor Intelligence API",
+    title="FinSight AI",
     version="1.0.0"
 )
 
