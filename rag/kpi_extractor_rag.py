@@ -2,7 +2,7 @@ import os
 from types import SimpleNamespace
 
 from dotenv import load_dotenv
-from pydantic import BaseModel, field_validator, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, field_validator, Field
 
 from llm.azure_openai import get_structured_completion
 from vectorstore.azure_ai_search import AzureAISearchVectorStore
@@ -11,14 +11,18 @@ load_dotenv()
 
 
 class FinancialMetrics(BaseModel):
-    revenue: str | int | None = Field(None, alias="Revenue")
-    net_income: str | int | None = Field(None, alias="Net Income")
-    operating_income: str | int | None = Field(None, alias="Operating Income")
-    cash_flow: str | int | None = Field(None, alias="Cash Flow from Operating Activities")
-    total_assets: str | int | None = Field(None, alias="Total Assets")
-    total_liabilities: str | int | None = Field(None, alias="Total Liabilities")
-    risk_factors: str | list | None = Field(None, alias="Top Risk Factors")
-    growth_drivers: str | list | None = Field(None, alias="Top Growth Drivers")
+    # The fallback (non-structured) path returns whatever key spelling the model
+    # chooses, so accept the spaced, camel-case and snake-case variants.
+    model_config = ConfigDict(populate_by_name=True)
+
+    revenue: str | int | None = Field(None, validation_alias=AliasChoices("Revenue", "revenue"))
+    net_income: str | int | None = Field(None, validation_alias=AliasChoices("Net Income", "NetIncome", "net_income"))
+    operating_income: str | int | None = Field(None, validation_alias=AliasChoices("Operating Income", "OperatingIncome", "operating_income"))
+    cash_flow: str | int | None = Field(None, validation_alias=AliasChoices("Cash Flow from Operating Activities", "CashFlowFromOperatingActivities", "cash_flow"))
+    total_assets: str | int | None = Field(None, validation_alias=AliasChoices("Total Assets", "TotalAssets", "total_assets"))
+    total_liabilities: str | int | None = Field(None, validation_alias=AliasChoices("Total Liabilities", "TotalLiabilities", "total_liabilities"))
+    risk_factors: str | list | None = Field(None, validation_alias=AliasChoices("Top Risk Factors", "TopRiskFactors", "risk_factors"))
+    growth_drivers: str | list | None = Field(None, validation_alias=AliasChoices("Top Growth Drivers", "TopGrowthDrivers", "growth_drivers"))
 
 
 class Retriever:
@@ -69,36 +73,40 @@ class Retriever:
         return documents
 
 
+CONTEXT_QUERIES = [
+    "consolidated balance sheets total assets total liabilities stockholders equity",
+    "consolidated statements of income revenues net income operating income",
+    "consolidated statements of cash flows net cash provided by operating activities",
+    "risk factors could adversely affect our business",
+    "growth drivers revenue increase primarily driven by",
+]
+
+
 def retrieve_context(
     retriever: Retriever,
     company: str,
     year: int
 ) -> str:
     """
-    Retrieve broad financial context from the vector store.
+    Retrieve financial context with one targeted query per topic so that
+    statements like the balance sheet are not crowded out by other sections.
     """
-    query = f"""
-    Annual report financial statements,
-    income statement,
-    balance sheet,
-    cash flow statement,
-    risks,
-    growth drivers,
-    financial performance
-    for {company} fiscal year {year}
-    """
+    seen = set()
+    sections = []
 
-    documents = retriever.invoke(
-        query=query,
-        company=company,
-        year=year,
-        top_k=20
-    )
-    # print(documents)
-    return "\n\n".join(
-        doc.page_content
-        for doc in documents
-    )
+    for query in CONTEXT_QUERIES:
+        documents = retriever.invoke(
+            query=f"{company} {year} {query}",
+            company=company,
+            year=year,
+            top_k=6
+        )
+        for doc in documents:
+            if doc.page_content not in seen:
+                seen.add(doc.page_content)
+                sections.append(doc.page_content)
+
+    return "\n\n".join(sections)
 
 
 def build_extraction_prompt(
