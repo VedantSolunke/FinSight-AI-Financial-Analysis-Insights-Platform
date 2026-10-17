@@ -32,7 +32,12 @@ async def upload_document(
             model=os.getenv("AZURE_OPENAI_EMBEDDING_DEPLOYMENT"),
             azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
             api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-            api_version=os.getenv("AZURE_OPENAI_API_VERSION")
+            api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
+            # Retry on Azure 429s (rate limit asks for ~60s waits)
+            max_retries=8,
+            retry_min_seconds=20,
+            retry_max_seconds=65,
+            chunk_size=16
         )
 
         vector_store = AzureAISearchVectorStore(
