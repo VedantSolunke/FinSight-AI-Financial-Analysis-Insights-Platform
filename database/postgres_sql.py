@@ -33,7 +33,13 @@ def get_engine(database: str | None = None):
         "?sslmode=require"
     )
 
-    return create_engine(connection_string)
+    return create_engine(
+        connection_string,
+        pool_pre_ping=True,
+        connect_args={
+            "connect_timeout": int(os.getenv("POSTGRES_CONNECT_TIMEOUT", "10"))
+        }
+    )
 
 
 def create_database() -> None:
@@ -56,7 +62,10 @@ def create_database() -> None:
             database="postgres",
             user=user,
             password=password,
-            sslmode="require"
+            sslmode="require",
+            # Fail fast instead of waiting on the OS TCP timeout when the
+            # server's firewall silently drops traffic.
+            connect_timeout=int(os.getenv("POSTGRES_CONNECT_TIMEOUT", "10"))
         )
         # Enable autocommit mode before executing CREATE DATABASE
         conn.autocommit = True
